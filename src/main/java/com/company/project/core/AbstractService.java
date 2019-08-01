@@ -1,74 +1,55 @@
 package com.company.project.core;
 
 
-import org.apache.ibatis.exceptions.TooManyResultsException;
 import org.springframework.beans.factory.annotation.Autowired;
-import tk.mybatis.mapper.entity.Condition;
+import tk.mybatis.mapper.common.Mapper;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.ParameterizedType;
 import java.util.List;
 
 /**
  * 基于通用MyBatis Mapper插件的Service接口的实现
  */
-public abstract class AbstractService<T> implements Service<T> {
+public abstract class AbstractService<T> {
 
     @Autowired
     protected Mapper<T> mapper;
 
-    private Class<T> modelClass;    // 当前泛型真实类型的Class
-
-    public AbstractService() {
-        ParameterizedType pt = (ParameterizedType) this.getClass().getGenericSuperclass();
-        modelClass = (Class<T>) pt.getActualTypeArguments()[0];
-    }
-
-    public void save(T model) {
+    /**
+     * 保存数据
+     */
+    public T save(T model) {
         mapper.insertSelective(model);
+        return mapper.selectOne(model);
     }
 
-    public void save(List<T> models) {
-        mapper.insertList(models);
+
+    /**
+     * 根据id删除数据
+     */
+    public int deleteById(Long id) {
+        return mapper.deleteByPrimaryKey(id);
     }
 
-    public void deleteById(Integer id) {
-        mapper.deleteByPrimaryKey(id);
-    }
 
-    public void deleteByIds(String ids) {
-        mapper.deleteByIds(ids);
-    }
-
-    public void update(T model) {
+    /**
+     * 更新数据
+     */
+    public T update(T model) {
         mapper.updateByPrimaryKeySelective(model);
+        return mapper.selectOne(model);
     }
 
-    public T findById(Integer id) {
+    /**
+     * 根据id获取数据
+     */
+    public T findById(Long id) {
         return mapper.selectByPrimaryKey(id);
     }
 
-    @Override
-    public T findBy(String fieldName, Object value) throws TooManyResultsException {
-        try {
-            T model = modelClass.newInstance();
-            Field field = modelClass.getDeclaredField(fieldName);
-            field.setAccessible(true);
-            field.set(model, value);
-            return mapper.selectOne(model);
-        } catch (ReflectiveOperationException e) {
-            throw new ServiceException(e.getMessage(), e);
-        }
-    }
 
-    public List<T> findByIds(String ids) {
-        return mapper.selectByIds(ids);
-    }
-
-    public List<T> findByCondition(Condition condition) {
-        return mapper.selectByCondition(condition);
-    }
-
+    /**
+     * 获取全部数据
+     */
     public List<T> findAll() {
         return mapper.selectAll();
     }

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+	<property name="FileNamePattern" value="./logs/" />
+    <!-- 应用名称 -->
+    <property name="APP_NAME" value="spring-boot-api-project-seed"/>
+    <!-- 日志输出格式 -->
+    <property name="ENCODER_PATTERN" value="%d{yyyy-MM-dd  HH:mm:ss.SSS} [%thread] %-5level %logger{80} - %msg%n"/>
+
+
+    <!-- 控制台日志：输出全部日志到控制台 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <Pattern>${ENCODER_PATTERN}</Pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 文件日志：输出全部日志到文件 -->
+    <appender name="SIFT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${FileNamePattern}/${APP_NAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${FileNamePattern}/logList/${APP_NAME}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <maxFileSize>200MB</maxFileSize>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${ENCODER_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- 错误日志：用于将错误日志输出到独立文件 -->
+    <appender name="ERROR_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${FileNamePattern}/${APP_NAME}-error.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${FileNamePattern}/logList/${APP_NAME}-error.%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${ENCODER_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>ERROR</level>
+        </filter>
+    </appender>
+
+
+	<root level="DEBUG" additivity="false">
+		<appender-ref ref="SIFT" />
+		<appender-ref ref="CONSOLE" />
+        <appender-ref ref="ERROR_FILE"/>
+	</root>
+</configuration>
