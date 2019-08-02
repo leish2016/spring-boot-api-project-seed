@@ -1,7 +1,6 @@
 package ${basePackage}.controller;
 
 import ${basePackage}.core.Result;
-import ${basePackage}.core.ResultGenerator;
 import ${basePackage}.model.entity.${modelNameUpperCamel};
 import ${basePackage}.service.${modelNameUpperCamel}Service;
 import com.github.pagehelper.PageHelper;
@@ -12,44 +11,43 @@ import javax.annotation.Resource;
 import java.util.List;
 
 /**
-* Created by ${author} on ${date}.
+* @author ${author} on ${date}.
 */
 @RestController
 @RequestMapping("/api${baseRequestMapping}")
 public class ${modelNameUpperCamel}Controller {
 
     @Resource
-    private ${modelNameUpperCamel}Service ${modelNameLowerCamel}Service;
+    ${modelNameUpperCamel}Service ${modelNameLowerCamel}Service;
 
     @PostMapping
     public Result add(${modelNameUpperCamel} ${modelNameLowerCamel}) {
-        ${modelNameLowerCamel}Service.save(${modelNameLowerCamel});
-        return ResultGenerator.genSuccessResult();
+        return Result.genSuccessResult(${modelNameLowerCamel}Service.save(${modelNameLowerCamel}));
     }
 
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Long id) {
         ${modelNameLowerCamel}Service.deleteById(id);
-        return ResultGenerator.genSuccessResult();
+        return Result.genSuccessResult();
     }
 
     @PutMapping
-    public Result update(${modelNameUpperCamel} ${modelNameLowerCamel}) {
+    public Result update(@RequestBody ${modelNameUpperCamel} ${modelNameLowerCamel}) {
         ${modelNameLowerCamel}Service.update(${modelNameLowerCamel});
-        return ResultGenerator.genSuccessResult();
+        return Result.genSuccessResult();
     }
 
     @GetMapping("/{id}")
     public Result detail(@PathVariable Long id) {
         ${modelNameUpperCamel} ${modelNameLowerCamel} = ${modelNameLowerCamel}Service.findById(id);
-        return ResultGenerator.genSuccessResult(${modelNameLowerCamel});
+        return Result.genSuccessResult(${modelNameLowerCamel});
     }
 
     @GetMapping
-    public Result list(@RequestParam(defaultValue = "0") Integer pageNum, @RequestParam(defaultValue = "0") Integer pageSize) {
+    public Result list(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "20") Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         List<${modelNameUpperCamel}> list = ${modelNameLowerCamel}Service.findAll();
         PageInfo pageInfo = new PageInfo(list);
-        return ResultGenerator.genSuccessResult(pageInfo);
+        return Result.genSuccessResult(pageInfo);
     }
 }

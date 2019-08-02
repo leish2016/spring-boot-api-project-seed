@@ -9,7 +9,7 @@ import javax.annotation.Resource;
 
 
 /**
- * Created by ${author} on ${date}.
+ * @author ${author} on ${date}.
  */
 @Service
 public class ${modelNameUpperCamel}Service extends AbstractService<${modelNameUpperCamel}> {

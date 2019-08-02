@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.company.project.core.ProjectConstant.*;
-
 /**
  * 代码生成器，根据数据表名称生成对应的Model、Mapper、Service、Controller简化开发。
  */
@@ -21,7 +19,7 @@ public class CodeGenerator {
     public static final String BASE_PACKAGE = "com.company.project";//生成代码所在的基础包名称，可根据自己公司的项目修改（注意：这个配置修改之后需要手工修改src目录项目默认的包路径，使其保持一致，不然会找不到类）
 
     //JDBC配置，请修改为你项目的实际配置
-    private static final String JDBC_URL = "jdbc:mysql://192.168.0.154:3306/test";
+    private static final String JDBC_URL = "jdbc:mysql://192.168.0.155:3306/test";
     private static final String JDBC_USERNAME = "DBA_USER";
     private static final String JDBC_PASSWORD = "dba123";
     private static final String JDBC_DIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
