@@ -19,7 +19,7 @@ public abstract class AbstractService<T> {
      */
     public T save(T model) {
         mapper.insertSelective(model);
-        return mapper.selectOne(model);
+        return model;
     }
 
 
@@ -34,9 +34,8 @@ public abstract class AbstractService<T> {
     /**
      * 更新数据
      */
-    public T update(T model) {
-        mapper.updateByPrimaryKeySelective(model);
-        return mapper.selectOne(model);
+    public int update(T model) {
+        return mapper.updateByPrimaryKeySelective(model);
     }
 
     /**

@@ -1,62 +1,63 @@
 package com.company.project.core;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 统一API响应结果封装
+ * @author leish
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Result<T> {
-    private int code;
-    private String message;
+
+    public Result(String respCode, String respMsg) {
+        this.respCode = respCode;
+        this.respMsg = respMsg;
+    }
+
+    /**
+     * 消息状态码
+     */
+    private String respCode;
+    /**
+     * 消息
+     */
+    private String respMsg;
+    /**
+     * 需要返回的内容
+     */
     private T data;
 
-    public Result(int code, String message) {
-        this.code = code;
-        this.message = message;
-    }
 
-    public Result(int code, String message, T data) {
-        this.code = code;
-        this.message = message;
-        this.data = data;
-    }
+    /**
+     * 处理成功
+     */
+    public final static String SUCCESS = "200";
+
+    /**
+     * 处理失败
+     */
+    public final static String FAIL = "400";
+
 
     private static final String DEFAULT_SUCCESS_MESSAGE = "SUCCESS";
 
     public static Result genSuccessResult() {
-        return new Result(ResultCode.SUCCESS.code,DEFAULT_SUCCESS_MESSAGE);
+        return new Result(SUCCESS,DEFAULT_SUCCESS_MESSAGE);
     }
 
     public static <T> Result<T> genSuccessResult(T data) {
-        return new Result(ResultCode.SUCCESS.code,DEFAULT_SUCCESS_MESSAGE,data);
+        return new Result(SUCCESS,DEFAULT_SUCCESS_MESSAGE,data);
     }
 
     public static Result genFailResult(String message) {
-        return new Result(ResultCode.FAIL.code,message);
+        return new Result(FAIL,message);
     }
 
-    /**
-     * 响应码枚举，参考HTTP状态码的语义
-     */
-    public enum ResultCode {
-        SUCCESS(200),//成功
-        FAIL(400),//失败
-        UNAUTHORIZED(401),//未认证（签名错误）
-        NOT_FOUND(404),//接口不存在
-        INTERNAL_SERVER_ERROR(500);//服务器内部错误
-
-        private final int code;
-
-        ResultCode(int code) {
-            this.code = code;
-        }
-
-        public int code() {
-            return code;
-        }
-    }
 }
 
 

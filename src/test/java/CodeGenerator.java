@@ -19,7 +19,7 @@ public class CodeGenerator {
     public static final String BASE_PACKAGE = "com.company.project";//生成代码所在的基础包名称，可根据自己公司的项目修改（注意：这个配置修改之后需要手工修改src目录项目默认的包路径，使其保持一致，不然会找不到类）
 
     //JDBC配置，请修改为你项目的实际配置
-    private static final String JDBC_URL = "jdbc:mysql://192.168.0.155:3306/test";
+    private static final String JDBC_URL = "jdbc:mysql://192.168.0.155:3306/test001";
     private static final String JDBC_USERNAME = "DBA_USER";
     private static final String JDBC_PASSWORD = "dba123";
     private static final String JDBC_DIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
@@ -71,7 +71,7 @@ public class CodeGenerator {
 
     public static void genModelAndMapper(String tableName, String modelName) {
         Context context = new Context(ModelType.FLAT);
-        context.setId("Potato");
+        context.setId("MysqlContext");
         context.setTargetRuntime("MyBatis3Simple");
         context.addProperty(PropertyRegistry.CONTEXT_BEGINNING_DELIMITER, "`");
         context.addProperty(PropertyRegistry.CONTEXT_ENDING_DELIMITER, "`");
@@ -86,7 +86,13 @@ public class CodeGenerator {
         PluginConfiguration pluginConfiguration = new PluginConfiguration();
         pluginConfiguration.setConfigurationType("tk.mybatis.mapper.generator.MapperPlugin");
         pluginConfiguration.addProperty("mappers", "tk.mybatis.mapper.common.Mapper");
+        pluginConfiguration.addProperty("lombok", "Data");
+        pluginConfiguration.addProperty("swagger", "true");
         context.addPluginConfiguration(pluginConfiguration);
+        //添加序列化插件
+        PluginConfiguration serializablePlugin = new PluginConfiguration();
+        serializablePlugin.setConfigurationType("org.mybatis.generator.plugins.SerializablePlugin");
+        context.addPluginConfiguration(serializablePlugin);
 
         JavaModelGeneratorConfiguration javaModelGeneratorConfiguration = new JavaModelGeneratorConfiguration();
         javaModelGeneratorConfiguration.setTargetProject(PROJECT_PATH + JAVA_PATH);
@@ -107,7 +113,7 @@ public class CodeGenerator {
         TableConfiguration tableConfiguration = new TableConfiguration(context);
         tableConfiguration.setTableName(tableName);
         if (StringUtils.isNotEmpty(modelName))tableConfiguration.setDomainObjectName(modelName);
-        tableConfiguration.setGeneratedKey(new GeneratedKey("id", "Mysql", true, null));
+        tableConfiguration.setGeneratedKey(new GeneratedKey("id", "JDBC", true, null));
         context.addTableConfiguration(tableConfiguration);
 
         List<String> warnings;

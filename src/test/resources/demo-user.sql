@@ -14,7 +14,7 @@ Date: 2017-06-23 14:25:27
 */
 
 SET FOREIGN_KEY_CHECKS=0;
-use test;
+use test001;
 -- ----------------------------
 -- Table structure for user
 -- ----------------------------
@@ -28,6 +28,7 @@ CREATE TABLE `user` (
   `register_date` datetime COMMENT '注册日期',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+ALTER TABLE `user` COMMENT='用户表';
 
 -- ----------------------------
 -- Records of user
