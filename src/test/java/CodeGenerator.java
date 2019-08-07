@@ -38,16 +38,17 @@ public class CodeGenerator {
     private static final String PACKAGE_PATH_CONTROLLER = packageConvertPath(CONTROLLER_PACKAGE);//生成的Controller存放路径
 
     private static final String AUTHOR = "leish";//@author
-    private static final String DATE = new SimpleDateFormat("yyyy/MM/dd").format(new Date());//@date
 
     public static void main(String[] args) {
         genCode("user");
+        //genCodeByCustomModelName("t_get_chl_log","GetChlLog");
         //genCodeByCustomModelName("输入表名","输入自定义Model名称");
     }
 
     /**
      * 通过数据表名称生成代码，Model 名称通过解析数据表名称获得，下划线转大驼峰的形式。
      * 如输入表名称 "t_user_detail" 将生成 TUserDetail、TUserDetailMapper、TUserDetailService ...
+     *
      * @param tableNames 数据表名称...
      */
     public static void genCode(String... tableNames) {
@@ -59,6 +60,7 @@ public class CodeGenerator {
     /**
      * 通过数据表名称，和自定义的 Model 名称生成代码
      * 如输入表名称 "t_user_detail" 和自定义的 Model 名称 "User" 将生成 User、UserMapper、UserService ...
+     *
      * @param tableName 数据表名称
      * @param modelName 自定义的 Model 名称
      */
@@ -76,6 +78,7 @@ public class CodeGenerator {
         context.addProperty(PropertyRegistry.CONTEXT_BEGINNING_DELIMITER, "`");
         context.addProperty(PropertyRegistry.CONTEXT_ENDING_DELIMITER, "`");
 
+        //JDBC 数据库连接配置
         JDBCConnectionConfiguration jdbcConnectionConfiguration = new JDBCConnectionConfiguration();
         jdbcConnectionConfiguration.setConnectionURL(JDBC_URL);
         jdbcConnectionConfiguration.setUserId(JDBC_USERNAME);
@@ -83,6 +86,7 @@ public class CodeGenerator {
         jdbcConnectionConfiguration.setDriverClass(JDBC_DIVER_CLASS_NAME);
         context.setJdbcConnectionConfiguration(jdbcConnectionConfiguration);
 
+        //插件配置
         PluginConfiguration pluginConfiguration = new PluginConfiguration();
         pluginConfiguration.setConfigurationType("tk.mybatis.mapper.generator.MapperPlugin");
         pluginConfiguration.addProperty("mappers", "tk.mybatis.mapper.common.Mapper");
@@ -94,16 +98,19 @@ public class CodeGenerator {
         serializablePlugin.setConfigurationType("org.mybatis.generator.plugins.SerializablePlugin");
         context.addPluginConfiguration(serializablePlugin);
 
+        //JavaModel entity实体类配置
         JavaModelGeneratorConfiguration javaModelGeneratorConfiguration = new JavaModelGeneratorConfiguration();
         javaModelGeneratorConfiguration.setTargetProject(PROJECT_PATH + JAVA_PATH);
         javaModelGeneratorConfiguration.setTargetPackage(MODEL_PACKAGE);
         context.setJavaModelGeneratorConfiguration(javaModelGeneratorConfiguration);
 
+        //mapper 接口XML配置
         SqlMapGeneratorConfiguration sqlMapGeneratorConfiguration = new SqlMapGeneratorConfiguration();
         sqlMapGeneratorConfiguration.setTargetProject(PROJECT_PATH + RESOURCES_PATH);
         sqlMapGeneratorConfiguration.setTargetPackage("mapper");
         context.setSqlMapGeneratorConfiguration(sqlMapGeneratorConfiguration);
 
+        //mapper 接口配置
         JavaClientGeneratorConfiguration javaClientGeneratorConfiguration = new JavaClientGeneratorConfiguration();
         javaClientGeneratorConfiguration.setTargetProject(PROJECT_PATH + JAVA_PATH);
         javaClientGeneratorConfiguration.setTargetPackage(MAPPER_PACKAGE);
@@ -112,10 +119,11 @@ public class CodeGenerator {
 
         TableConfiguration tableConfiguration = new TableConfiguration(context);
         tableConfiguration.setTableName(tableName);
-        if (StringUtils.isNotEmpty(modelName))tableConfiguration.setDomainObjectName(modelName);
+        if (StringUtils.isNotEmpty(modelName)) tableConfiguration.setDomainObjectName(modelName);
         tableConfiguration.setGeneratedKey(new GeneratedKey("id", "JDBC", true, null));
         context.addTableConfiguration(tableConfiguration);
 
+        //generator 生成文件
         List<String> warnings;
         MyBatisGenerator generator;
         try {
@@ -141,48 +149,41 @@ public class CodeGenerator {
         System.out.println(modelName + "Mapper.xml 生成成功");
     }
 
+    /**
+     * 生成 Service 实现类
+     */
     public static void genService(String tableName, String modelName) {
         try {
             freemarker.template.Configuration cfg = getConfiguration();
-
-            Map<String, Object> data = new HashMap<>();
-            data.put("date", DATE);
-            data.put("author", AUTHOR);
             String modelNameUpperCamel = StringUtils.isEmpty(modelName) ? tableNameConvertUpperCamel(tableName) : modelName;
-            data.put("modelNameUpperCamel", modelNameUpperCamel);
-            data.put("modelNameLowerCamel", tableNameConvertLowerCamel(tableName));
-            data.put("basePackage", BASE_PACKAGE);
-
+            Map<String, Object> data = getFreemarkerMap(tableName, modelName);
 
             File file1 = new File(PROJECT_PATH + JAVA_PATH + PACKAGE_PATH_SERVICE + modelNameUpperCamel + "Service.java");
             if (!file1.getParentFile().exists()) {
                 file1.getParentFile().mkdirs();
             }
-            cfg.getTemplate("service-impl.ftl").process(data,
-                    new FileWriter(file1));
+            System.out.println("ServiceImpl map:"+data);
+            cfg.getTemplate("service-impl.ftl").process(data,new FileWriter(file1));
             System.out.println(modelNameUpperCamel + "ServiceImpl.java 生成成功");
         } catch (Exception e) {
             throw new RuntimeException("生成Service失败", e);
         }
     }
 
+    /**
+     * 生成 Controller 类
+     */
     public static void genController(String tableName, String modelName) {
         try {
             freemarker.template.Configuration cfg = getConfiguration();
-
-            Map<String, Object> data = new HashMap<>();
-            data.put("date", DATE);
-            data.put("author", AUTHOR);
             String modelNameUpperCamel = StringUtils.isEmpty(modelName) ? tableNameConvertUpperCamel(tableName) : modelName;
-            data.put("baseRequestMapping", modelNameConvertMappingPath(modelNameUpperCamel));
-            data.put("modelNameUpperCamel", modelNameUpperCamel);
-            data.put("modelNameLowerCamel", CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, modelNameUpperCamel));
-            data.put("basePackage", BASE_PACKAGE);
+            Map<String, Object> data = getFreemarkerMap(tableName, modelName);
 
             File file = new File(PROJECT_PATH + JAVA_PATH + PACKAGE_PATH_CONTROLLER + modelNameUpperCamel + "Controller.java");
             if (!file.getParentFile().exists()) {
                 file.getParentFile().mkdirs();
             }
+            System.out.println("controller map:"+data);
             cfg.getTemplate("controller-restful.ftl").process(data, new FileWriter(file));
 
             System.out.println(modelNameUpperCamel + "Controller.java 生成成功");
@@ -200,23 +201,22 @@ public class CodeGenerator {
         return cfg;
     }
 
-    private static String tableNameConvertLowerCamel(String tableName) {
-        return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, tableName.toLowerCase());
+    private static Map getFreemarkerMap(String tableName, String modelName) {
+        Map<String, Object> data = new HashMap<>();
+        String DATE = new SimpleDateFormat("yyyy-MM-dd").format(new Date());//@date
+        data.put("date", DATE);
+        data.put("author", AUTHOR);
+        String modelNameUpperCamel = StringUtils.isEmpty(modelName) ? tableNameConvertUpperCamel(tableName) : modelName;
+        data.put("modelNameUpperCamel", modelNameUpperCamel);
+        data.put("modelNameLowerCamel", CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, modelNameUpperCamel));
+        data.put("basePackage", BASE_PACKAGE);
+        return data;
     }
+
 
     private static String tableNameConvertUpperCamel(String tableName) {
         return CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, tableName.toLowerCase());
 
-    }
-
-    private static String tableNameConvertMappingPath(String tableName) {
-        tableName = tableName.toLowerCase();//兼容使用大写的表名
-        return "/" + (tableName.contains("_") ? tableName.replaceAll("_", "/") : tableName);
-    }
-
-    private static String modelNameConvertMappingPath(String modelName) {
-        String tableName = CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, modelName);
-        return tableNameConvertMappingPath(tableName);
     }
 
     private static String packageConvertPath(String packageName) {
