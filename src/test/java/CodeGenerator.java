@@ -25,7 +25,7 @@ public class CodeGenerator {
     private static final String JDBC_DIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
 
     //各模块包名，有需求可以修改.
-    public static final String MODEL_PACKAGE = BASE_PACKAGE + ".model.entity";//生成的Model所在包
+    public static final String MODEL_PACKAGE = BASE_PACKAGE + ".domain.entity";//生成的Model所在包
     public static final String MAPPER_PACKAGE = BASE_PACKAGE + ".mapper";//生成的Mapper所在包
     public static final String SERVICE_PACKAGE = BASE_PACKAGE + ".service";//生成的Service所在包
     public static final String CONTROLLER_PACKAGE = BASE_PACKAGE + ".controller";//生成的Controller所在包
@@ -120,7 +120,7 @@ public class CodeGenerator {
         TableConfiguration tableConfiguration = new TableConfiguration(context);
         tableConfiguration.setTableName(tableName);
         if (StringUtils.isNotEmpty(modelName)) tableConfiguration.setDomainObjectName(modelName);
-        tableConfiguration.setGeneratedKey(new GeneratedKey("id", "JDBC", true, null));
+        tableConfiguration.setGeneratedKey(new GeneratedKey("id", "MySQL", true, null));
         context.addTableConfiguration(tableConfiguration);
 
         //generator 生成文件
@@ -210,6 +210,7 @@ public class CodeGenerator {
         data.put("modelNameUpperCamel", modelNameUpperCamel);
         data.put("modelNameLowerCamel", CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_CAMEL, modelNameUpperCamel));
         data.put("basePackage", BASE_PACKAGE);
+        data.put("modelPackage", MODEL_PACKAGE);
         return data;
     }
 

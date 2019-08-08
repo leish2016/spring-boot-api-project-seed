@@ -1,11 +1,9 @@
 package com.company.project.core;
 
-import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.stereotype.Component;
 
 
@@ -17,11 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class LogHandler {
 
-    @Pointcut("execution(* com.company.project.controller.*.*(..))")
-    public void log() {
-    }
-
-    @Around("log()")
+    @Around("execution(* com.company.project.controller.*.*(..)) || execution(* com.company.project.core.*.*(..))")
     public Object showLog(ProceedingJoinPoint joinPoint) throws Throwable {
         long start = System.currentTimeMillis();
         String clazz = joinPoint.getTarget().getClass().getSimpleName();
@@ -43,14 +37,12 @@ public class LogHandler {
             }
         }
         Object result = new Object();
-        String print = "";
         try {
             result = joinPoint.proceed();
-            print = StrUtil.maxLength(result.toString(), 150);
         } catch (Throwable e) {
             throw e;
         } finally {
-            log.info("# [RT={}ms] -> [{}.{}({}),result={}]", (System.currentTimeMillis() - start), clazz, method, param.toString(),print);
+            log.info("# [RT={}ms] -> [{}.{}({}),result={}]", (System.currentTimeMillis() - start), clazz, method, param.toString(),result);
         }
         return result;
     }
