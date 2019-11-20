@@ -19,9 +19,9 @@ public class CodeGenerator {
     public static final String BASE_PACKAGE = "com.company.project";//生成代码所在的基础包名称，可根据自己公司的项目修改（注意：这个配置修改之后需要手工修改src目录项目默认的包路径，使其保持一致，不然会找不到类）
 
     //JDBC配置，请修改为你项目的实际配置
-    private static final String JDBC_URL = "jdbc:mysql://192.168.0.155:3306/test001";
-    private static final String JDBC_USERNAME = "DBA_USER";
-    private static final String JDBC_PASSWORD = "dba123";
+    private static final String JDBC_URL = "jdbc:mysql://localhost:3306/test001";
+    private static final String JDBC_USERNAME = "root";
+    private static final String JDBC_PASSWORD = "123456";
     private static final String JDBC_DIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
 
     //各模块包名，有需求可以修改.
@@ -40,7 +40,7 @@ public class CodeGenerator {
     private static final String AUTHOR = "leish";//@author
 
     public static void main(String[] args) {
-        genCode("user");
+        genCode("userinfo");
         //genCodeByCustomModelName("t_get_chl_log","GetChlLog");
         //genCodeByCustomModelName("输入表名","输入自定义Model名称");
     }
@@ -119,7 +119,9 @@ public class CodeGenerator {
 
         TableConfiguration tableConfiguration = new TableConfiguration(context);
         tableConfiguration.setTableName(tableName);
-        if (StringUtils.isNotEmpty(modelName)) tableConfiguration.setDomainObjectName(modelName);
+        if (StringUtils.isNotEmpty(modelName)){
+            tableConfiguration.setDomainObjectName(modelName);
+        }
         tableConfiguration.setGeneratedKey(new GeneratedKey("id", "MySQL", true, null));
         context.addTableConfiguration(tableConfiguration);
 

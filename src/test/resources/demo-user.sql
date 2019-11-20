@@ -1,50 +1,36 @@
-/*
-Navicat MySQL Data Transfer
-
-Source Server         : Localhost
-Source Server Version : 50713
-Source Host           : localhost:3306
-Source Database       : test
-
-Target Server Type    : MYSQL
-Target Server Version : 50713
-File Encoding         : 65001
-
-Date: 2017-06-23 14:25:27
-*/
-
-SET FOREIGN_KEY_CHECKS=0;
+-- 创建数据库.
+-- CREATE DATABASE test001;
 use test001;
--- ----------------------------
--- Table structure for user
--- ----------------------------
-DROP TABLE IF EXISTS `user`;
-CREATE TABLE `user` (
-  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `username` varchar(255) NOT NULL COMMENT '用户名',
-  `password` varchar(255) NOT NULL COMMENT '密码',
-  `nick_name` varchar(255) COMMENT '昵称',
-  `sex` int(1) COMMENT '性别',
-  `register_date` datetime COMMENT '注册日期',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
-ALTER TABLE `user` COMMENT='用户表';
 
--- ----------------------------
--- Records of user
--- ----------------------------
-INSERT INTO `user` VALUES ('1', '89921218@qq.com', '1ee04e0b1cb5af7367c80c22e42efd8b', '土豆', '1', '2017-06-23 14:24:23');
-INSERT INTO `user` VALUES ('2', '2@qq.com', '1ee04e0b1cb5af7367c80c22e42efd8b', '土豆-2', '1', '2017-06-23 14:24:23');
-INSERT INTO `user` VALUES ('3', '3@qq.com', '1ee04e0b1cb5af7367c80c22e42efd8b', '土豆-3', '1', '2017-06-23 14:24:23');
-INSERT INTO `user` VALUES ('4', '4@qq.com', '1ee04e0b1cb5af7367c80c22e42efd8b', '土豆-4', '1', '2017-06-23 14:24:23');
-INSERT INTO `user` VALUES ('5', '5@qq.com', '1ee04e0b1cb5af7367c80c22e42efd8b', '土豆-5', '1', '2017-06-23 14:24:23');
-INSERT INTO `user` VALUES ('6', '6@qq.com', '1ee04e0b1cb5af7367c80c22e42efd8b', '土豆-6', '1', '2017-06-23 14:24:23');
-INSERT INTO `user` VALUES ('7', '7@qq.com', '1ee04e0b1cb5af7367c80c22e42efd8b', '土豆-7', '1', '2017-06-23 14:24:23');
-INSERT INTO `user` VALUES ('8', '8@qq.com', '1ee04e0b1cb5af7367c80c22e42efd8b', '土豆-8', '1', '2017-06-23 14:24:23');
-INSERT INTO `user` VALUES ('9', '9@qq.com', '1ee04e0b1cb5af7367c80c22e42efd8b', '土豆-9', '1', '2017-06-23 14:24:23');
-INSERT INTO `user` VALUES ('10', '10@qq.com', '1ee04e0b1cb5af7367c80c22e42efd8b', '土豆-10', '1', '2017-06-23 14:24:23');
-SET FOREIGN_KEY_CHECKS=1;
+-- 创建表
+/* ====================================================================================================================
+    userinfo 用户信息表
+==================================================================================================================== */
+DROP TABLE IF EXISTS userinfo;
+CREATE TABLE userinfo (
+    id                  bigint          PRIMARY KEY    auto_increment       COMMENT '编号',
+    name                varchar(32)     NOT NULL       UNIQUE               COMMENT '用户名',
+    phone               varchar(20)     NOT NULL                            COMMENT '手机号码',
+    create_time           datetime(3)     NOT NULL                            COMMENT '创建时间',
+    update_time           datetime(3)                                         COMMENT '更新时间'
+) COMMENT = '用户信息表';
 
-desc `user`;
+-- 创建索引
+CREATE INDEX userinfo_name ON userinfo (name);
+-- drop INDEX userinfo_name
+/*------------------------------------------------------------------------------------------------------------------------
 
-select * from `user`;
+--------------------------------------------------------------------------------------------------------------------------*/
+
+-- 录入测试数据
+INSERT INTO userinfo VALUES('1','张珊','15507552211',CURRENT_TIMESTAMP,null);
+INSERT INTO userinfo VALUES('2','李思','15507552212',CURRENT_TIMESTAMP,null);
+INSERT INTO userinfo VALUES('3','王舞','15507552213',CURRENT_TIMESTAMP,null);
+
+-- 查询所有
+select * from userinfo;
+
+-- 条件查询
+SELECT ID, create_time, NAME, PHONE FROM userinfo u WHERE u.NAME LIKE '李思' AND u.create_time >= '2017-09-25 00:00:00' AND u.create_time <= '2017-09-25 23:59:59'
+
+

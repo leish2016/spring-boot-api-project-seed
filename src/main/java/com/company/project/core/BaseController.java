@@ -1,6 +1,5 @@
 package com.company.project.core;
 
-import com.company.project.domain.entity.User;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.web.bind.annotation.*;
@@ -43,7 +42,7 @@ public class BaseController<T> {
     @GetMapping
     public Result list(@RequestParam(defaultValue = "1") Integer pageNum, @RequestParam(defaultValue = "5") Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
-        List<User> list = service.findAll();
+        List<T> list = service.findAll();
         PageInfo pageInfo = new PageInfo(list);
         return Result.genSuccessResult(pageInfo);
     }
